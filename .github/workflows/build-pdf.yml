@@ -1,0 +1,30 @@
+name: Build PDF from Markdown
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # erlaubt manuelles Starten über GitHub UI
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Pandoc and LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra
+
+      - name: Generate PDF from Markdown
+        run: |
+          mkdir -p output
+          pandoc docs/*.md -o output/ABAP_Leitfaden.pdf --pdf-engine=xelatex --toc --metadata title="DSAG e.V. ABAP Leitfaden 2025"
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ABAP_Leitfaden-pdf
+          path: output/ABAP_Leitfaden.pdf

@@ -3,7 +3,7 @@ name: Build PDF from Markdown
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # erlaubt manuelles Starten über GitHub UI
+  workflow_dispatch:
 
 jobs:
   build-pdf:
@@ -21,23 +21,19 @@ jobs:
           export PATH=$PATH:/home/runner/.TinyTeX/bin/x86_64-linux
           tlmgr install xetex ulem geometry fancyhdr titlesec fontspec xcolor collection-fontsrecommended
 
-
-      - name: Generate PDF from Markdown
-        run: |
-          mkdir -p output
-          pandoc docs/*.md -o output/ABAP_Leitfaden.pdf --pdf-engine=xelatex --toc --metadata title="DSAG e.V. ABAP Leitfaden 2025"
-
-
       - name: Generate PDF from Markdown
         run: |
           export PATH=$PATH:/home/runner/.TinyTeX/bin/x86_64-linux
           mkdir -p output
           pandoc docs/*.md -o output/documentation.pdf \
-          pandoc docs/*.md -o output/ABAP_Leitfaden.pdf --pdf-engine=xelatex --toc --metadata title="DSAG e.V. ABAP Leitfaden 2025"
+            --pdf-engine=xelatex \
+            --toc \
+            -V geometry:a4paper \
+            -V fontsize=11pt \
+            --metadata title="Projekt-Dokumentation"
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ABAP_Leitfaden-pdf
-          path: output/ABAP_Leitfaden.pdf
-          
+          name: documentation-pdf
+          path: output/documentation.pdf

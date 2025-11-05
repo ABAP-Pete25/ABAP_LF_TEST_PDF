@@ -13,27 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Pandoc and prerequisites
+      - name: Install Pandoc and TeX Live (provides xelatex)
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc curl
-
-      - name: Install TinyTeX manually
-        run: |
-          cd ~
-          curl -sL https://yihui.org/tinytex/install-unx.sh -o install-unx.sh
-          bash install-unx.sh
-          echo "PATH=$HOME/.TinyTeX/bin/x86_64-linux:$PATH" >> $GITHUB_ENV
-          export PATH=$HOME/.TinyTeX/bin/x86_64-linux:$PATH
-          echo "Checking TinyTeX installation..."
-          ls -la $HOME/.TinyTeX/bin/x86_64-linux || echo "TinyTeX bin directory not found!"
-          sleep 5
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr update --self
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install xetex ulem geometry fancyhdr titlesec fontspec xcolor collection-fontsrecommended
+          sudo apt-get install -y pandoc \
+            texlive-xetex \
+            texlive-fonts-recommended \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            wget
 
       - name: Generate PDF from Markdown
         run: |
-          export PATH=$HOME/.TinyTeX/bin/x86_64-linux:$PATH
           mkdir -p output
           pandoc docs/*.md -o output/documentation.pdf \
             --pdf-engine=xelatex \

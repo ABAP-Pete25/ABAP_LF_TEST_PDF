@@ -16,15 +16,29 @@ jobs:
       - name: Install Pandoc and TinyTeX
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc
+          sudo apt-get install -y pandoc wget
+          
+          # Install TinyTeX (lightweight LaTeX distribution)
           wget -qO- "https://yihui.org/gh/tinytex/install-bin-unix.sh" | sh
-          export PATH=$PATH:/home/runner/.TinyTeX/bin/x86_64-linux
-          tlmgr install xetex ulem geometry fancyhdr titlesec fontspec xcolor collection-fontsrecommended
+          
+          # Add TinyTeX to PATH for current session
+          echo "PATH=$HOME/.TinyTeX/bin/x86_64-linux:$PATH" >> $GITHUB_ENV
+          
+          # Verify installation
+          source $GITHUB_ENV
+          which tlmgr || echo "TinyTeX not yet in PATH, fixing..."
+          
+          # Wait a moment for file system sync
+          sleep 5
+          
+          # Install required LaTeX packages
+          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install \
+            xetex ulem geometry fancyhdr titlesec fontspec xcolor collection-fontsrecommended
 
       - name: Generate PDF from Markdown
         run: |
-          export PATH=$PATH:/home/runner/.TinyTeX/bin/x86_64-linux
           mkdir -p output
+          export PATH=$HOME/.TinyTeX/bin/x86_64-linux:$PATH
           pandoc docs/*.md -o output/documentation.pdf \
             --pdf-engine=xelatex \
             --toc \

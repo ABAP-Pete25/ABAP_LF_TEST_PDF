@@ -22,7 +22,7 @@ title: DSAG's ABAP Leitfaden
 email: info@dsag.de
 description: >- # this means to ignore newlines until "baseurl:"
   DSAG's ABAP Leitfaden
-baseurl: "/ABAP-Leitfaden" # the subpath of your site, e.g. /blog
+baseurl: "/ABAP_LF_TEST_PDF" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: _dsag
 github_username:  DSAGadmin

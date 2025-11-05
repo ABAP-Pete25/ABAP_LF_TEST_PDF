@@ -1,0 +1,54 @@
+name: Generate full PDF from Just-the-docs
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout Repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Install wkhtmltopdf
+      - name: Install wkhtmltopdf
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wkhtmltopdf
+
+      # 3️⃣ Generate structured PDF
+      - name: Generate PDF from HTML pages
+        run: |
+          mkdir -p output
+
+          # Erstelle eine temporäre Datei mit allen Seiten in Reihenfolge
+          echo "" > pages.txt
+          # Liste die Seiten so, wie sie in der Navigation erscheinen
+          # Beispiel: index.html zuerst, dann intro, chapter1, etc.
+          echo "_site/index.html" >> pages.txt
+          echo "_site/intro.html" >> pages.txt
+          echo "_site/chapter1.html" >> pages.txt
+          echo "_site/chapter2.html" >> pages.txt
+          echo "_site/appendix.html" >> pages.txt
+
+          # Konvertiere alle Seiten in ein PDF
+          xargs wkhtmltopdf \
+            --margin-top 20mm \
+            --margin-bottom 20mm \
+            --margin-left 20mm \
+            --margin-right 20mm \
+            --header-center "Projekt-Dokumentation" \
+            --footer-right "[page]" \
+            --footer-left "Just-the-docs" \
+            < pages.txt output/documentation.pdf
+
+      # 4️⃣ Upload PDF artifact
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-pdf
+          path: output/documentation.pdf
